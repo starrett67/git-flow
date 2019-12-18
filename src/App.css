@@ -1,0 +1,220 @@
+  
+body {
+  font-family: Roboto, sans-serif;
+  background: #F2F2F2;
+}
+
+/* General Animations */
+.fadein-slow {
+  animation: fadein 4s;
+}
+
+.fadein-fast {
+  animation: fadein 2s;
+}
+
+@keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+}
+
+/* wrappers & containers */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media screen and (max-width: 900px) {
+  .container {
+    flex-wrap: wrap
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    height: 200vh;
+  }
+}
+.dashboard {
+  border-style: solid;
+  border-color: #6762a6
+}
+
+/* card */
+.card {
+  background-color: #FFF;
+  border-radius: 3%;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  word-wrap: break-word;
+  width: 215px;
+  height: 100%;
+  margin-bottom: 20px;
+  transition: .5s;
+}
+
+.card:hover {
+  box-shadow: 0px 6px 6px rgba(0, 0, 0, 0.45);
+}
+
+.close {
+  border-radius: 50%;
+  text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
+  float: right;
+  top: -228px;
+  right: -6px;
+  font-size: 2em;
+  position: relative;
+  color: #fff;
+  transition: .5s;
+}
+
+.close:hover {
+  cursor: pointer;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+img {
+  width: 215px;
+  border-radius: 3% 3% 0 0;
+}
+
+h4 {
+  font-size: 1.2em;
+  color: #757575;
+}
+
+@keyframes pulse-icon {
+    from {
+      text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+    }
+    to {
+      text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.55);
+    }
+}
+
+@keyframes pulse-colors {
+    from {
+      background: #c9c3e6;
+      border: 3px solid #a29ccc;
+    }
+    to {
+      background: #6762a6;
+      border: 3px solid #c9c3e6;
+    }
+}
+
+.btn {
+  white-space: nowrap !important
+}
+
+.rt-container {
+  margin: 0.375rem;
+}
+
+.rt-token {
+  background-color: #4285f4 !important
+}
+
+.flex-row {
+  display: flex;
+  flex-flow: row wrap;
+  margin-right: -.625rem;
+  margin-left: -.625rem;
+	padding-top: .75rem;
+	padding-bottom: .75rem;
+  width: 100%;
+  min-width: 25rem;
+}
+
+
+.row {
+	margin-bottom: 1em;
+  justify-content: center;
+}
+
+
+
+/* Button reset */
+button {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  margin-bottom: 20px;
+}
+
+/* Shared button styles */
+.button-wrapper {
+  height: 300px;
+}
+
+button.github {
+  border-radius: 50%;
+  width: 215px;
+  height: 215px;
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+  transition-timing-function: ease-in;
+  transition: 0.3s;
+  transform: scale(0.7);
+}
+
+button.github:hover {
+  box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+button.github.disabled {
+  background-color: #999 !important;
+  cursor: no-drop;
+}
+
+button.github.disabled:hover {
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+button.github.disabled:hover span {
+  text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+button.github span {
+  font-size: 10em !important;
+  text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.25);
+  transition: 0.3s;
+  color: #fff;
+}
+
+button.github:hover span {
+  text-shadow: 2px 5px 5px rgba(0, 0, 0, 0.5);
+  transform: rotate(-1.1deg)
+}
+
+/* Github */
+button.github {
+  border: 3px solid #ffffff;
+  background: #767676;
+}
+
+button.github:hover {
+  background: #6e5494;
+}
+
+div.controls {
+ box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+ border-radius: 0.125rem;
+ background-color: #fff;
+ padding-top: 1rem;
+ padding-bottom: 1rem;
+ text-align: left;
+ margin-bottom: 2rem;
+ padding-left: 2rem;
+ padding-right: 2rem;
+}
