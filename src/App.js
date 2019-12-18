@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import Github from './components/Github'
+import Header from './components/Header'
+import Operations from './components/Operations'
 import Cookies from 'universal-cookie'
 import { MDBContainer, MDBRow, MDBCol } from 'mdbreact'
 
@@ -25,7 +27,7 @@ class App extends Component {
 
   renderLogin () {
     if (this.state.github) {
-      return (<p>{this.state.github._profile.name}</p>)
+      return (<Operations token={this.state.github._token.accessToken} />)
     } else {
       return (<Github onSuccess={(res) => this.onSuccess(res)} onFailure={(res) => this.onFailure(res)} />)
     }
@@ -35,7 +37,9 @@ class App extends Component {
     return (
       <MDBContainer fluid>
         <MDBRow>
-          <MDBCol />
+          <MDBCol>
+            <Header />
+          </MDBCol>
         </MDBRow>
         <MDBRow className='mt-1'>
           <MDBCol className='text-center'>
