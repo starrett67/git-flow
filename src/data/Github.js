@@ -17,7 +17,7 @@ export default class GithubData {
     })
   }
 
-  async getRepos (org) {
+  async getRepos () {
     if (!this.repos.length > 0) {
       console.log('Getting Repos!')
       let page = 1
@@ -35,7 +35,20 @@ export default class GithubData {
       } while (repos.length === 100)
     }
     console.log(this.repos)
-    return this.repos
+    return this.repos.sort(sortRepos)
+  }
+
+  async getBranches (repo) {
+    let branches = []
+    let page = 1
+    let responseCount = 0
+    do {
+      const response = await this.octokit.repos.listBranches({ per_page: 100, owner: repo.owner.login, repo: repo.name, page: page })
+      responseCount = response.data.length
+      branches = branches.concat(response.data)
+      page++
+    } while (responseCount === 100)
+    repo.branches = branches
   }
 
   async createPullRequest (repo, src, dest) {

@@ -13,7 +13,8 @@ class App extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      github: cookies.get('github') || null
+      github: cookies.get('github') || null,
+      selectedRepo: {}
     }
     console.log(this.state)
   }
