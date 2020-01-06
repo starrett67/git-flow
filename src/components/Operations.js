@@ -42,7 +42,8 @@ class Operations extends Component {
     }
   }
 
-  getBranchName (name) {
+  getBranchName () {
+    let name = this.state.branchName
     if (this.state.operationType === 'Create Branch') {
       name =`${this.state.branchType}/${name}`
     }
@@ -94,7 +95,7 @@ class Operations extends Component {
   }
 
   setBranchName = (event) => {
-    const name = this.getBranchName(event.target.value.replace(/[^a-zA-Z0-9]/g, '-'))
+    const name = event.target.value.replace(/[^a-zA-Z0-9]/g, '-')
     this.setState({ branchName: name }, this.setOperationData)
     localStorage.setItem('branchName', name)
   }
@@ -105,7 +106,7 @@ class Operations extends Component {
       this.state.selectedRepo, 
       this.state.operationType, 
       this.state.branchType, 
-      this.state.branchName
+      this.getBranchName()
     )
   }
 
@@ -115,15 +116,15 @@ class Operations extends Component {
     const operationData = {
       operationType: operationType.split(' ')[0].toLocaleLowerCase(),
       branchType: branchType.toLocaleLowerCase(),
-      branchName: this.state.branchName
+      branchName: this.getBranchName()
     }
     this.props.onSetOperationData(operationData)
   }
   
 
   getBranchByName() {
-    if (this.repoIsSelected() && this.state.selectedRepo.branches && this.state.branchName) {
-      return this.state.selectedRepo.branches.find(b => b.name === this.state.branchName)
+    if (this.repoIsSelected() && this.state.selectedRepo.branches && this.getBranchName()) {
+      return this.state.selectedRepo.branches.find(b => b.name === this.getBranchName())
     }
     return {name: ''}
   }
@@ -215,10 +216,10 @@ class Operations extends Component {
   }
 
   renderSubmit () {
-    if (this.state.branchName !== '') {
+    if (this.getBranchName() !== '') {
       return (
       <Button variant="contained" onClick={this.onOperationButtonClick} >
-        {this.state.operationType}: {this.state.branchName}
+        {this.state.operationType}: {this.getBranchName()}
       </Button>
       )
     }
