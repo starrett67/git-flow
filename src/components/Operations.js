@@ -42,8 +42,7 @@ class Operations extends Component {
     }
   }
 
-  getBranchName () {
-    let name = `${this.state.branchName}`
+  getBranchName (name) {
     if (this.state.operationType === 'Create Branch') {
       name =`${this.state.branchType}/${name}`
     }
@@ -95,7 +94,6 @@ class Operations extends Component {
   }
 
   setBranchName = (event) => {
-    const name = event.target.value.replace(/[^a-zA-Z0-9]/g, '-');
     this.setState({ branchName: name }, this.setOperationData)
     localStorage.setItem('branchName', name)
   }
@@ -219,7 +217,7 @@ class Operations extends Component {
     if (this.state.branchName !== '') {
       return (
       <Button variant="contained" onClick={this.onOperationButtonClick} >
-        {this.state.operationType}: {this.getBranchName()}
+        {this.state.operationType}: {this.state.branchName}
       </Button>
       )
     }
