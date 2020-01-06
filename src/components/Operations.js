@@ -94,6 +94,7 @@ class Operations extends Component {
   }
 
   setBranchName = (event) => {
+    const name = this.getBranchName(event.target.value.replace(/[^a-zA-Z0-9]/g, '-'))
     this.setState({ branchName: name }, this.setOperationData)
     localStorage.setItem('branchName', name)
   }
