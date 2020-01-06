@@ -4,66 +4,133 @@ import GithubData from '../data/Github'
 import { MDBJumbotron, MDBContainer, MDBCol, MDBRow } from 'mdbreact'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button';
-
+import Button from '@material-ui/core/Button'
 class Operations extends Component {
   constructor (props) {
     super(props)
     this.state = {
       data: new GithubData(props.token),
       repos: [],
-      selectedRepo: {},
-      operationType: '',
-      branchType: '',
-      branchName: ''
+      selectedRepo: JSON.parse(localStorage.getItem('repository')) || {},
+      operationType: localStorage.getItem('operationType') || '',
+      branchType: localStorage.getItem('branchType') || '',
+      branchName: localStorage.getItem('branchName') || ''
     }
+    this.setOperationData()
   }
 
-  componentWillMount () {
+  UNSAFE_componentWillMount () {
     this._asyncRequest = this.state.data.getRepos()
       .then(repos => {
         this.setState({ repos: repos })
+        try {
+          if (this.repoIsSelected) {
+            const updatedRepo = repos.find(r => r.name === this.state.selectedRepo.name)
+            this.selectRepo(null, updatedRepo)
+          }
+        }
+        catch(e) {}
       })
   }
 
   componentWillUnmount () {
     if (this._asyncRequest) {
-      this._asyncRequest.cancel()
+      try {
+        this._asyncRequest.cancel()
+      }
+      catch(e) {}
     }
   }
 
   getBranchName () {
-    return `${this.state.branchType}/${this.state.branchName}`
+    let name = `${this.state.branchName}`
+    if (this.state.operationType === 'Create Branch') {
+      name =`${this.state.branchType}/${name}`
+    }
+    return name
   }
 
-  selectRepo = (event, value) => {
-    this.setState({ selectedRepo: value, operationType: '', branchType: '', branchName: '' }, () => {
-      if (value && JSON.stringify(value) !== '{}') {
-        this.state.data.getBranches(this.state.selectedRepo)
+  repoIsSelected () {
+    return (this.state.selectedRepo && this.state.selectedRepo.name)
+  }
+
+  selectRepo = (event, value = {}) => {
+    if (value && value.name) {
+      if (this.state.selectedRepo && value.name !== this.state.selectedRepo.name) {
+        this.setState({ selectedRepo: value, operationType: '', branchType: '', branchName: '' }, this.setOperationData)
       }
-    })
+      else {
+        this.setState({ selectedRepo: value}, this.setOperationData)
+      }
+      this.state.data.getBranches(value).then(() => {
+      localStorage.setItem('repository', JSON.stringify(value))
+      this.setState({ selectedRepo: value }, this.setOperationData)
+      })
+    } else {
+      this.setState({ selectedRepo: value, operationType: '', branchType: '', branchName: '' }, this.setOperationData)
+
+      localStorage.removeItem('repository')
+      localStorage.removeItem('operationType')
+      localStorage.removeItem('branchType')
+      localStorage.removeItem('branchName')
+    }
   }
 
   selectOperation = (event, value) => {
-    this.setState({ operationType: value, branchName: '' })
+    this.setState({ operationType: value, branchName: '' }, this.setOperationData)
+    localStorage.setItem('operationType', value)
+    localStorage.removeItem('branchName')
   }
 
   selectBranchType = (event, value) => {
-    this.setState({ branchType: value })
+    this.setState({ branchType: value }, this.setOperationData)
+    localStorage.setItem('branchType', value, this.setOperationData)
   }
 
   selectRepoBranch = (event, value) => {
     if (!value) { value = {name: ''}}
-    this.setState({branchName: value.name})
+    this.setState({branchName: value.name}, this.setOperationData)
+
+    localStorage.setItem('branchName', value.name)
   }
 
   setBranchName = (event) => {
     const name = event.target.value.replace(/[^a-zA-Z0-9]/g, '-');
-    this.setState({ branchName: name })
+    this.setState({ branchName: name }, this.setOperationData)
+    localStorage.setItem('branchName', name)
+  }
+
+  onOperationButtonClick = () => {
+    console.log('clicking the button')
+    this.state.data.performGitFlowOperation(
+      this.state.selectedRepo, 
+      this.state.operationType, 
+      this.state.branchType, 
+      this.state.branchName
+    )
+  }
+
+  setOperationData() {
+    const branchType = this.state.branchType || ''
+    const operationType = this.state.operationType || ''
+    const operationData = {
+      operationType: operationType.split(' ')[0].toLocaleLowerCase(),
+      branchType: branchType.toLocaleLowerCase(),
+      branchName: this.state.branchName
+    }
+    this.props.onSetOperationData(operationData)
+  }
+  
+
+  getBranchByName() {
+    if (this.repoIsSelected() && this.state.selectedRepo.branches && this.state.branchName) {
+      return this.state.selectedRepo.branches.find(b => b.name === this.state.branchName)
+    }
+    return {name: ''}
   }
 
   renderOperationType () {
-    if (this.state.selectedRepo && JSON.stringify(this.state.selectedRepo) !== '{}') {
+    if (this.repoIsSelected()) {
       return (
         <Autocomplete
           options={['Create Branch', 'Merge Branch']}
@@ -99,16 +166,23 @@ class Operations extends Component {
   renderBranchName () {
     return (
       <MDBCol>              
-        <TextField id="branch-name" label="Branch Name" variant="outlined" onChange={this.setBranchName} fullWidth />
+        <TextField id="branch-name" label="Branch Name" variant="outlined" value={this.state.branchName} onChange={this.setBranchName} fullWidth />
       </MDBCol>
     )
+  }
+
+  getValidBranches () {
+    if (this.state.selectedRepo && this.state.selectedRepo.branches && this.state.selectedRepo.branches.length > 0) {
+      return this.state.selectedRepo.branches.filter(b => b.name !== 'master' && b.name !== 'develop')
+    }
+    return [{name: ''}]
   }
 
   renderRepoBranches () {
     return (
       <MDBCol>
         <Autocomplete
-          options={this.state.selectedRepo.branches}
+          options={this.getValidBranches()}
           getOptionLabel={option => option.name}
           id='repo-branches'
           renderInput={params => (
@@ -116,6 +190,7 @@ class Operations extends Component {
           )}
           onChange={this.selectRepoBranch}
           loading={this.state.selectedRepo.branches === undefined || this.state.selectedRepo.branches.length === 0}
+          value={this.getBranchByName()}
         />       
       </MDBCol>
     )
@@ -137,13 +212,15 @@ class Operations extends Component {
           {this.renderRepoBranches()}
         </MDBRow>
       )
-    }
+      }
   }
 
   renderSubmit () {
     if (this.state.branchName !== '') {
       return (
-      <Button variant="contained">{this.state.operationType}: {this.getBranchName()}</Button>
+      <Button variant="contained" onClick={this.onOperationButtonClick} >
+        {this.state.operationType}: {this.getBranchName()}
+      </Button>
       )
     }
   }
@@ -163,9 +240,9 @@ class Operations extends Component {
                     renderInput={params => (
                       <TextField {...params} label='Choose Repository' variant='outlined' fullWidth />
                     )}
-                    loading={this.state.repos.length === 0}
+                    loading={this.state.repos.length === 0 || !this.repoIsSelected()}
                     onChange={this.selectRepo}
-                    value={this.state.selectedRepo.name}
+                    value={this.repoIsSelected() ? this.state.selectedRepo : {}}
                   />
                 </MDBCol>
                 <MDBCol>  

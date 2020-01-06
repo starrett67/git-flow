@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Github from './components/Github'
 import Header from './components/Header'
 import Operations from './components/Operations'
+import GitGraph from './components/GitGraph'
 import Cookies from 'universal-cookie'
 import { MDBContainer, MDBRow, MDBCol } from 'mdbreact'
 
@@ -14,7 +15,12 @@ class App extends Component {
     super(props)
     this.state = {
       github: cookies.get('github') || null,
-      selectedRepo: {}
+      selectedRepo: {},
+      operationData: {
+        operationType: '',
+        branchName: '',
+        branchType: ''
+      }
     }
     console.log(this.state)
   }
@@ -26,11 +32,23 @@ class App extends Component {
 
   onFailure (response) { console.log(response) }
 
+  onSetOperationData = (data) => {
+    this.setState({ operationData: data })
+  }
+
   renderLogin () {
     if (this.state.github) {
-      return (<Operations token={this.state.github._token.accessToken} />)
+      return (<Operations token={this.state.github._token.accessToken}  onSetOperationData={this.onSetOperationData} />)
     } else {
       return (<Github onSuccess={(res) => this.onSuccess(res)} onFailure={(res) => this.onFailure(res)} />)
+    }
+  }
+
+  renderGitGraph () {
+    if (this.state.operationData.operationType && this.state.operationData.branchName && this.state.operationData.branchType) {
+      return (
+        <GitGraph operationData={this.state.operationData} />
+      )
     }
   }
 
@@ -47,6 +65,8 @@ class App extends Component {
             {this.renderLogin()}
           </MDBCol>
         </MDBRow>
+          {this.renderGitGraph()}
+        <MDBRow />
       </MDBContainer>
     )
   }

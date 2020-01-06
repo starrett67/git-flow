@@ -7,6 +7,7 @@ const Header = () => {
     <MDBJumbotron fluid>
       <MDBContainer className='text-center'>
         <h1 className='display-4'>Git Flow</h1>
+        <p>This tool will open new tabs. Enable popups so it works properly.</p>
       </MDBContainer>
     </MDBJumbotron>
   )
