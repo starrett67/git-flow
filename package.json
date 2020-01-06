@@ -28,7 +28,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "GATE_KEEPER_URL=https://0axken4v19.execute-api.us-east-1.amazonaws.com/dev/gatekeeper && APP_ID=2cc5fb04088296f12839 && OAUTH_CALLBACK=https://git-flow.joshstarrett.com react-scripts build",
+    "build": "GATE_KEEPER_URL=https://0axken4v19.execute-api.us-east-1.amazonaws.com/dev/gatekeeper APP_ID=2cc5fb04088296f12839 OAUTH_CALLBACK=https://git-flow.joshstarrett.com react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
