@@ -8,9 +8,9 @@ class Github extends Component {
       <div className='button-wrapper fadein-fast'>
         <SocialButton
           provider='github'
-          gatekeeper={process.env.GATEKEEPER_URL || 'https://0axken4v19.execute-api.us-east-1.amazonaws.com/dev/gatekeeper-local'}
-          appId={process.env.APP_ID || '9ffe48c0bbe211000e2f'}
-          redirect={process.env.OAUTH_CALLBACK || 'http://localhost:3000'}
+          gatekeeper={process.env.GATEKEEPER_URL || 'https://0axken4v19.execute-api.us-east-1.amazonaws.com/dev/gatekeeper'}
+          appId={process.env.APP_ID || '2cc5fb04088296f12839'}
+          redirect={process.env.OAUTH_CALLBACK || 'https://git-flow.joshstarrett.com'}
           scope={['repo']}
           onLoginSuccess={this.props.onSuccess}
           onLoginFailure={this.props.onFailure}
