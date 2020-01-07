@@ -50,8 +50,33 @@ class Operations extends Component {
     return name
   }
 
+  getBranchByName() {
+    if (this.repoIsSelected() && this.state.selectedRepo.branches && this.getBranchName()) {
+      return this.state.selectedRepo.branches.find(b => b.name === this.getBranchName())
+    }
+    return {name: ''}
+  }
+
+  getValidBranches () {
+    if (this.state.selectedRepo && this.state.selectedRepo.branches && this.state.selectedRepo.branches.length > 0) {
+      return this.state.selectedRepo.branches.filter(b => b.name !== 'master' && b.name !== 'develop')
+    }
+    return [{name: ''}]
+  }
+
   repoIsSelected () {
     return (this.state.selectedRepo && this.state.selectedRepo.name)
+  }
+
+  setOperationData() {
+    const branchType = this.state.branchType || ''
+    const operationType = this.state.operationType || ''
+    const operationData = {
+      operationType: operationType.split(' ')[0].toLocaleLowerCase(),
+      branchType: branchType.toLocaleLowerCase(),
+      branchName: this.getBranchName()
+    }
+    this.props.onSetOperationData(operationData)
   }
 
   selectRepo = (event, value = {}) => {
@@ -95,7 +120,7 @@ class Operations extends Component {
   }
 
   setBranchName = (event) => {
-    const name = event.target.value.replace(/[^a-zA-Z0-9]/g, '-')
+    const name = event.target.value.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()
     this.setState({ branchName: name }, this.setOperationData)
     localStorage.setItem('branchName', name)
   }
@@ -108,25 +133,6 @@ class Operations extends Component {
       this.state.branchType, 
       this.getBranchName()
     )
-  }
-
-  setOperationData() {
-    const branchType = this.state.branchType || ''
-    const operationType = this.state.operationType || ''
-    const operationData = {
-      operationType: operationType.split(' ')[0].toLocaleLowerCase(),
-      branchType: branchType.toLocaleLowerCase(),
-      branchName: this.getBranchName()
-    }
-    this.props.onSetOperationData(operationData)
-  }
-  
-
-  getBranchByName() {
-    if (this.repoIsSelected() && this.state.selectedRepo.branches && this.getBranchName()) {
-      return this.state.selectedRepo.branches.find(b => b.name === this.getBranchName())
-    }
-    return {name: ''}
   }
 
   renderOperationType () {
@@ -169,13 +175,6 @@ class Operations extends Component {
         <TextField id="branch-name" label="Branch Name" variant="outlined" value={this.state.branchName} onChange={this.setBranchName} fullWidth />
       </MDBCol>
     )
-  }
-
-  getValidBranches () {
-    if (this.state.selectedRepo && this.state.selectedRepo.branches && this.state.selectedRepo.branches.length > 0) {
-      return this.state.selectedRepo.branches.filter(b => b.name !== 'master' && b.name !== 'develop')
-    }
-    return [{name: ''}]
   }
 
   renderRepoBranches () {
