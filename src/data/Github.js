@@ -74,7 +74,7 @@ export default class GithubData {
       const pr = await this.octokit.pulls.create({
         repo: repo.name,
         owner: repo.owner.login,
-        title: `Merge to ${dest.name}: ${src.commit.commit.message}`,
+        title: `${src.commit.commit.message}`,
         head: src.name,
         base: dest.name
       })
@@ -156,10 +156,10 @@ export default class GithubData {
     try {
       operationType = operationType.split(' ')[0].toLocaleLowerCase()
       if (operationType === 'merge') {
-        this.mergeOperation(repo, branchType, branchName)
+        await this.mergeOperation(repo, branchType, branchName)
       }
       if (operationType === 'create') {
-        this.createOperation(repo, branchType, branchName)
+        await this.createOperation(repo, branchType, branchName)
       }
     } catch (e) { }
   }

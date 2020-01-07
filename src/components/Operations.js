@@ -64,6 +64,32 @@ class Operations extends Component {
     return [{name: ''}]
   }
 
+  getMergeTargets () {
+    if (this.state.branchType) {      
+      let mergeTargets = ['develop']
+      if (this.state.branchType === 'release' || this.state.branchType === 'hotfix') {
+        mergeTargets.push('master')
+      }
+      return mergeTargets
+    }
+  }
+
+  getCreateTarget () {
+    if (this.state.branchType === 'hotfix') {
+      return 'master'
+    }
+    return 'develop'
+  }
+
+  getButtonText () {
+    if (this.state.operationType === 'Merge Branch') {
+      return `Merging: ${this.getBranchName()}  -->  ${this.getMergeTargets().join(' and ')}`
+    }
+    else {
+      return `Branching: ${this.getBranchName()}  from  ${this.getCreateTarget()}`
+    }
+  }
+
   repoIsSelected () {
     return (this.state.selectedRepo && this.state.selectedRepo.name)
   }
@@ -88,8 +114,8 @@ class Operations extends Component {
         this.setState({ selectedRepo: value}, this.setOperationData)
       }
       this.state.data.getBranches(value).then(() => {
-      localStorage.setItem('repository', JSON.stringify(value))
-      this.setState({ selectedRepo: value }, this.setOperationData)
+        localStorage.setItem('repository', JSON.stringify(value))
+        this.setState({ selectedRepo: value }, this.setOperationData)
       })
     } else {
       this.setState({ selectedRepo: value, operationType: '', branchType: '', branchName: '' }, this.setOperationData)
@@ -132,7 +158,11 @@ class Operations extends Component {
       this.state.operationType, 
       this.state.branchType, 
       this.getBranchName()
-    )
+    ).then(() => {
+      this.state.data.getBranches(this.state.selectedRepo)
+    }).then(() => {
+        localStorage.setItem('repository', JSON.stringify(this.state.selectedRepo))
+    })
   }
 
   renderOperationType () {
@@ -211,14 +241,14 @@ class Operations extends Component {
           {this.renderRepoBranches()}
         </MDBRow>
       )
-      }
+    }
   }
 
   renderSubmit () {
     if (this.getBranchName() !== '') {
       return (
       <Button variant="contained" onClick={this.onOperationButtonClick} >
-        {this.state.operationType}: {this.getBranchName()}
+        {this.getButtonText()}
       </Button>
       )
     }
