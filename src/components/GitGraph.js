@@ -13,12 +13,17 @@ class GitGraph extends React.Component {
     this.graphs = {}
     this.commitOptions = {
       style: {
-        hasTooltipInCompactMode: false,
+        // hasTooltipInCompactMode: false,
         message: {
           display: false
         }
-      }
+      },
+      renderTooltip: () => {}
     }
+  }
+
+  UNSAFE_componentWillReceiveProps (newProps) {
+    this.setState({ operationData: newProps.operationData })
   }
 
   branchOptions (name) {
@@ -36,16 +41,20 @@ class GitGraph extends React.Component {
     }
   }
 
+  isMerge () {
+    return this.state.operationData.operationType === 'merge'
+  }
+
+  getKey () {
+    return `${this.state.operationData.branchType}.${this.state.operationData.branchName.substring(5)}`
+  }
+
   mergeOptions (branch) {
     return {
       branch: branch,
       fastForward: false,
       commitOptions: this.commitOptions
     }
-  }
-
-  UNSAFE_componentWillReceiveProps (newProps) {
-    this.setState({ operationData: newProps.operationData })
   }
 
   renderFeature (gitgraph) {
@@ -86,14 +95,6 @@ class GitGraph extends React.Component {
     } else {
       master.commit(this.commitOptions)
     }
-  }
-
-  isMerge () {
-    return this.state.operationData.operationType === 'merge'
-  }
-
-  getKey () {
-    return `${this.state.operationData.branchType}.${this.state.operationData.branchName.substring(5)}`
   }
 
   renderGraph () {
